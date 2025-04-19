@@ -3,154 +3,184 @@ using System.IO;
 using System.Text.Json;
 using System.Collections.Generic;
 
-public class JsonManager
+namespace JSONManager
 {
-    private string currentFilePath;
-    private Dictionary<string, object> jsonData;
-
-    public JsonManager()
+    public class JsonManager
     {
-        jsonData = new Dictionary<string, object>();
-    }
+        private string currentFilePath = string.Empty;
+        private Dictionary<string, object> jsonData;
 
-    // Load an existing JSON file
-    public bool LoadJsonFile(string filePath)
-    {
-        try
+        public JsonManager()
         {
-            if (!File.Exists(filePath))
+            jsonData = new Dictionary<string, object>();
+        }
+
+        // Load an existing JSON file
+        public bool LoadJsonFile(string filePath)
+        {
+            try
             {
-                Console.WriteLine("File not found.");
+                if (!File.Exists(filePath))
+                {
+                    Console.WriteLine("File not found.");
+                    return false;
+                }
+
+                string jsonContent = File.ReadAllText(filePath) ?? string.Empty;
+                if (string.IsNullOrWhiteSpace(jsonContent))
+                {
+                    Console.WriteLine("The file is empty. Initializing with an empty JSON object.");
+                    jsonData = new Dictionary<string, object>();
+                }
+                else
+                {
+                    jsonData = JsonSerializer.Deserialize<Dictionary<string, object>>(jsonContent) ?? new Dictionary<string, object>();
+                }
+
+                currentFilePath = filePath;
+                Console.WriteLine("JSON file loaded successfully.");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error loading JSON file: {ex.Message}");
                 return false;
             }
-
-            string jsonContent = File.ReadAllText(filePath);
-            jsonData = JsonSerializer.Deserialize<Dictionary<string, object>>(jsonContent);
-            currentFilePath = filePath;
-
-            Console.WriteLine("JSON file loaded successfully.");
-            return true;
         }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error loading JSON file: {ex.Message}");
-            return false;
-        }
-    }
 
-    // Create a new JSON file
-    public bool CreateNewJsonFile(string fileName, string filePath)
-    {
-        try
+        // Create a new JSON file
+        public bool CreateNewJsonFile(string fileName, string filePath)
         {
-            currentFilePath = Path.Combine(filePath, fileName);
-
-            if (File.Exists(currentFilePath))
+            try
             {
-                Console.WriteLine("File already exists.");
+                currentFilePath = Path.Combine(filePath, fileName);
+
+                if (File.Exists(currentFilePath))
+                {
+                    Console.WriteLine("File already exists.");
+                    return false;
+                }
+
+                jsonData.Clear();
+                SaveJsonFile();
+
+                Console.WriteLine("New JSON file created successfully.");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error creating JSON file: {ex.Message}");
                 return false;
             }
-
-            jsonData.Clear();
-            SaveJsonFile();
-
-            Console.WriteLine("New JSON file created successfully.");
-            return true;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error creating JSON file: {ex.Message}");
-            return false;
-        }
-    }
-
-    // Add new data to the JSON
-    public void AddData(string key, object value)
-    {
-        if (jsonData.ContainsKey(key))
-        {
-            Console.WriteLine("Key already exists. Use a different key.");
-            return;
         }
 
-        jsonData[key] = value;
-        Console.WriteLine("Data added successfully.");
-    }
-
-    // Edit existing data in the JSON
-    public void EditData(string key, object newValue)
-    {
-        if (!jsonData.ContainsKey(key))
+        // Add new data to the JSON
+        public void AddData(string key, string value)
         {
-            Console.WriteLine("Key not found.");
-            return;
-        }
-
-        jsonData[key] = newValue;
-        Console.WriteLine("Data updated successfully.");
-    }
-
-    // Delete data from the JSON
-    public void DeleteData(string key)
-    {
-        if (!jsonData.ContainsKey(key))
-        {
-            Console.WriteLine("Key not found.");
-            return;
-        }
-
-        jsonData.Remove(key);
-        Console.WriteLine("Data deleted successfully.");
-    }
-
-    // Save the JSON file
-    public void SaveJsonFile()
-    {
-        try
-        {
-            if (string.IsNullOrEmpty(currentFilePath))
+            if (jsonData.ContainsKey(key))
             {
-                Console.WriteLine("No file path specified. Cannot save.");
+                Console.WriteLine("Key already exists. Use a different key.");
                 return;
             }
 
-            string jsonContent = JsonSerializer.Serialize(jsonData, new JsonSerializerOptions { WriteIndented = true });
-            File.WriteAllText(currentFilePath, jsonContent);
-
-            Console.WriteLine("JSON file saved successfully.");
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error saving JSON file: {ex.Message}");
-        }
-    }
-
-    // View the JSON data
-    public void ViewJsonData()
-    {
-        if (jsonData.Count == 0)
-        {
-            Console.WriteLine("No data available.");
-            return;
+            jsonData[key] = value;
+            Console.WriteLine("Data added successfully.");
         }
 
-        Console.WriteLine("Current JSON Data:");
-        foreach (var kvp in jsonData)
+        // Edit existing data in the JSON
+        public void EditData(string key, string newValue)
         {
-            Console.WriteLine($"{kvp.Key}: {kvp.Value}");
-        }
-    }
+            if (!jsonData.ContainsKey(key))
+            {
+                Console.WriteLine("Key not found.");
+                return;
+            }
 
-    // Search for a key in the JSON data
-    public void SearchJsonData(string key)
-    {
-        if (jsonData.ContainsKey(key))
-        {
-            Console.WriteLine($"Key: {key}, Value: {jsonData[key]}");
+            if (newValue == null)
+            {
+                Console.WriteLine("Invalid value. Please provide a valid value.");
+                return;
+            }
+
+            jsonData[key] = newValue;
+            Console.WriteLine("Data updated successfully.");
         }
-        else
+
+        // Delete data from the JSON
+        public void DeleteData(string key)
         {
-            Console.WriteLine("Key not found.");
+            if (!jsonData.ContainsKey(key))
+            {
+                Console.WriteLine("Key not found.");
+                return;
+            }
+
+            jsonData.Remove(key);
+            Console.WriteLine("Data deleted successfully.");
+        }
+
+        // Save the JSON file
+        public void SaveJsonFile()
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(currentFilePath))
+                {
+                    Console.WriteLine("No file path specified. Cannot save.");
+                    return;
+                }
+
+                string directory = Path.GetDirectoryName(currentFilePath) ?? string.Empty;
+                if (string.IsNullOrEmpty(directory) || !Directory.Exists(directory))
+                {
+                    Console.WriteLine("The directory does not exist or is invalid. Cannot save the file.");
+                    return;
+                }
+
+                string jsonContent = JsonSerializer.Serialize(jsonData, new JsonSerializerOptions { WriteIndented = true });
+                File.WriteAllText(currentFilePath, jsonContent);
+
+                Console.WriteLine("JSON file saved successfully.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error saving JSON file: {ex.Message}");
+            }
+        }
+
+        // View the JSON data
+        public void ViewJsonData()
+        {
+            if (jsonData.Count == 0)
+            {
+                Console.WriteLine("No data available.");
+                return;
+            }
+
+            Console.WriteLine("Current JSON Data:");
+            foreach (var kvp in jsonData)
+            {
+                Console.WriteLine($"{kvp.Key}: {kvp.Value}");
+            }
+        }
+
+        // Search for a key in the JSON data
+        public void SearchJsonData(string key)
+        {
+            if (string.IsNullOrEmpty(key))
+            {
+                Console.WriteLine("Invalid key. Please provide a valid key.");
+                return;
+            }
+
+            if (jsonData.ContainsKey(key))
+            {
+                Console.WriteLine($"Key: {key}, Value: {jsonData[key]}");
+            }
+            else
+            {
+                Console.WriteLine("Key not found.");
+            }
         }
     }
 }

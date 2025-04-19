@@ -13,11 +13,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/workspaces/JSONManager/src/JSONManager/JSONManager.csproj",
+      "projectUniqueName": "/workspaces/JSONManager/JSONManager.csproj",
       "projectName": "JSONManager",
-      "projectPath": "/workspaces/JSONManager/src/JSONManager/JSONManager.csproj",
+      "projectPath": "/workspaces/JSONManager/JSONManager.csproj",
       "packagesPath": "/home/codespace/.nuget/packages/",
-      "outputPath": "/workspaces/JSONManager/src/JSONManager/obj/",
+      "outputPath": "/workspaces/JSONManager/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/home/codespace/.nuget/NuGet/NuGet.Config"

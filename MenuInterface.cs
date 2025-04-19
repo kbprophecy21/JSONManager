@@ -1,10 +1,14 @@
 using System;
 
+using JSONManager;
+
 public class MenuInterface
 {
     private JsonManager jsonManager;
-    private string input = "";
+    private string input = string.Empty;
+   
 
+    // Constructor to initialize the JsonManager    
     public MenuInterface()
     {
         jsonManager = new JsonManager();
@@ -19,7 +23,7 @@ public class MenuInterface
         Console.WriteLine("2. Create New file");
         Console.WriteLine("3. Exit");
         Console.WriteLine("Select an option: ");
-        input = Console.ReadLine();
+        input = Console.ReadLine()?.Trim() ?? string.Empty;
         HandleStartUpInput(input);
     }
 
@@ -28,19 +32,30 @@ public class MenuInterface
         switch (input)
         {
             case "1":
-                string filePath = LoadExistingFileInterface();
-                if (jsonManager.LoadJsonFile(filePath))
+                string existingFilePath = LoadExistingFileInterface();
+                if (!string.IsNullOrEmpty(existingFilePath) && jsonManager.LoadJsonFile(existingFilePath))
                 {
                     Console.WriteLine("File loaded successfully.");
                     DisplayMainMenu();
                 }
+                else
+                {
+                    Console.WriteLine("Failed to load the file. Returning to the startup menu.");
+                    DisplayStartupMenu();
+                }
                 break;
             case "2":
-                var (fileName, filePath) = CreateNewFileInterface();
-                if (jsonManager.CreateNewJsonFile(fileName, filePath))
+                var (fileName, newFilePath) = CreateNewFileInterface();
+                if (!string.IsNullOrEmpty(fileName) && !string.IsNullOrEmpty(newFilePath) &&
+                    jsonManager.CreateNewJsonFile(fileName, newFilePath))
                 {
                     Console.WriteLine("New file created successfully.");
                     DisplayMainMenu();
+                }
+                else
+                {
+                    Console.WriteLine("Failed to create the file. Returning to the startup menu.");
+                    DisplayStartupMenu();
                 }
                 break;
             case "3":
@@ -53,32 +68,53 @@ public class MenuInterface
         }
     }
 
-    public string LoadExistingFileInterface()
+    public string? LoadExistingFileInterface()
     {
         Console.WriteLine("Enter the path to the existing JSON file:");
-        return Console.ReadLine();
+        string filePath = (Console.ReadLine() ?? string.Empty).Trim();
+
+        if (string.IsNullOrEmpty(filePath))
+        {
+            Console.WriteLine("Invalid file path. Please try again.");
+            return null;
+        }
+
+        return filePath;
     }
 
     public (string fileName, string filePath) CreateNewFileInterface()
     {
         Console.WriteLine("Enter the name of the new JSON file:");
-        string fileName = Console.ReadLine();
+        string fileName = Console.ReadLine()?.Trim() ?? string.Empty;
+
+        if (string.IsNullOrEmpty(fileName))
+        {
+            Console.WriteLine("Invalid file name. Please try again.");
+            return (string.Empty, string.Empty);
+        }
 
         Console.WriteLine("Enter the path where you want to save the new JSON file:");
-        string filePath = Console.ReadLine();
+        string filePath = (Console.ReadLine() ?? string.Empty).Trim();
+
+        if (string.IsNullOrEmpty(filePath))
+        {
+            Console.WriteLine("Invalid file path. Please try again.");
+            return (string.Empty, string.Empty);
+        }
 
         return (fileName, filePath);
     }
 
     public void DisplayMainMenu()
     {
+        Console.WriteLine("\nMain Menu:");
         Console.WriteLine("1. Edit JSON data");
         Console.WriteLine("2. View JSON data");
         Console.WriteLine("3. Search JSON data");
         Console.WriteLine("4. Save JSON data");
         Console.WriteLine("5. Exit");
         Console.WriteLine("Select an option: ");
-        input = Console.ReadLine();
+        input = Console.ReadLine()?.Trim() ?? string.Empty;
         HandleMainMenuInput(input);
     }
 
@@ -95,8 +131,15 @@ public class MenuInterface
                 break;
             case "3":
                 Console.WriteLine("Enter the key to search:");
-                string key = Console.ReadLine();
-                jsonManager.SearchJsonData(key);
+                string key = Console.ReadLine()?.Trim() ?? string.Empty;
+                if (!string.IsNullOrEmpty(key))
+                {
+                    jsonManager.SearchJsonData(key);
+                }
+                else
+                {
+                    Console.WriteLine("Invalid key. Please try again.");
+                }
                 DisplayMainMenu();
                 break;
             case "4":
@@ -115,12 +158,13 @@ public class MenuInterface
 
     public void DisplayEditingMenu()
     {
+        Console.WriteLine("\nEditing Menu:");
         Console.WriteLine("1. Add new data");
         Console.WriteLine("2. Edit existing data");
         Console.WriteLine("3. Delete data");
         Console.WriteLine("4. Back to Main Menu");
         Console.WriteLine("Select an option: ");
-        input = Console.ReadLine();
+        input = Console.ReadLine()?.Trim() ?? string.Empty;
         HandleEditingMenuInput(input);
     }
 
@@ -130,24 +174,48 @@ public class MenuInterface
         {
             case "1":
                 Console.WriteLine("Enter the key:");
-                string addKey = Console.ReadLine();
+                string addKey = Console.ReadLine()?.Trim() ?? string.Empty;
                 Console.WriteLine("Enter the value:");
-                string addValue = Console.ReadLine();
-                jsonManager.AddData(addKey, addValue);
+                string addValue = Console.ReadLine()?.Trim() ?? string.Empty;
+
+                if (!string.IsNullOrEmpty(addKey) && !string.IsNullOrEmpty(addValue))
+                {
+                    jsonManager.AddData(addKey, addValue);
+                }
+                else
+                {
+                    Console.WriteLine("Invalid key or value. Please try again.");
+                }
                 DisplayEditingMenu();
                 break;
             case "2":
                 Console.WriteLine("Enter the key to edit:");
-                string editKey = Console.ReadLine();
+                string editKey = Console.ReadLine()?.Trim() ?? string.Empty;
                 Console.WriteLine("Enter the new value:");
-                string editValue = Console.ReadLine();
-                jsonManager.EditData(editKey, editValue);
+                string editValue = Console.ReadLine()?.Trim() ?? string.Empty;
+
+                if (!string.IsNullOrEmpty(editKey) && !string.IsNullOrEmpty(editValue))
+                {
+                    jsonManager.EditData(editKey, editValue);
+                }
+                else
+                {
+                    Console.WriteLine("Invalid key or value. Please try again.");
+                }
                 DisplayEditingMenu();
                 break;
             case "3":
                 Console.WriteLine("Enter the key to delete:");
-                string deleteKey = Console.ReadLine();
-                jsonManager.DeleteData(deleteKey);
+                string deleteKey = Console.ReadLine()?.Trim() ?? string.Empty;
+
+                if (!string.IsNullOrEmpty(deleteKey))
+                {
+                    jsonManager.DeleteData(deleteKey);
+                }
+                else
+                {
+                    Console.WriteLine("Invalid key. Please try again.");
+                }
                 DisplayEditingMenu();
                 break;
             case "4":
