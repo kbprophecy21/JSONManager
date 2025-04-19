@@ -6,11 +6,13 @@ public class Program
 {
     public static void Main(string[] args)
     {
-        Console.WriteLine("Welcome to the JSON Manager!");
+        
         
         // Create an instance of MenuInterface
         MenuInterface menuInterface = new MenuInterface();
-        
+    
+        Console.WriteLine("Welcome to the JSON Manager!");
+
         // Start the program by displaying the startup menu
         menuInterface.DisplayStartupMenu();
     }

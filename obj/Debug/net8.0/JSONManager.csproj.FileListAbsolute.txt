@@ -3,3 +3,13 @@
 /workspaces/JSONManager/obj/Debug/net8.0/JSONManager.AssemblyInfo.cs
 /workspaces/JSONManager/obj/Debug/net8.0/JSONManager.csproj.CoreCompileInputs.cache
 /workspaces/JSONManager/obj/Debug/net8.0/JSONManager.sourcelink.json
+/workspaces/JSONManager/bin/Debug/net8.0/JSONManager
+/workspaces/JSONManager/bin/Debug/net8.0/JSONManager.deps.json
+/workspaces/JSONManager/bin/Debug/net8.0/JSONManager.runtimeconfig.json
+/workspaces/JSONManager/bin/Debug/net8.0/JSONManager.dll
+/workspaces/JSONManager/bin/Debug/net8.0/JSONManager.pdb
+/workspaces/JSONManager/obj/Debug/net8.0/JSONManager.dll
+/workspaces/JSONManager/obj/Debug/net8.0/refint/JSONManager.dll
+/workspaces/JSONManager/obj/Debug/net8.0/JSONManager.pdb
+/workspaces/JSONManager/obj/Debug/net8.0/JSONManager.genruntimeconfig.cache
+/workspaces/JSONManager/obj/Debug/net8.0/ref/JSONManager.dll
